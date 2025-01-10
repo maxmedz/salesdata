@@ -39,8 +39,32 @@ ggplot(daily_sales, aes(y = total_sales, x = sale_day)) +
 daily_sales$delta <- daily_sales$total_sales-lag(daily_sales$total_sales)
 
 # Exercise 2. Finding the date when it spiked
-daily_sales%>%
-  filter(delta == max(delta, na.rm = TRUE))
+spike_day<-daily_sales%>%
+  filter(delta == max(delta, na.rm = TRUE))%>%
+  pull(sale_day)
+# Exercise 3.
+#Is the change in daily sales at the date you selected statistically significant? If so, what is the p-value?
+## to do so, i will compare the mean sales before and after the spike
 
-# Exercise 3. Is the change in daily sales at the date you selected statistically significant? If so, what is the p-value?
-## to do so, i will compare the mean sales before and after the s
+daily_sales$spiked<-
+  ifelse(daily_sales$sale_day<spike_day,0,1)
+
+t.test(total_sales ~ spiked, data = daily_sales, var.equal = TRUE)
+## the difference in means is significant
+## p-value < 2.2e-16
+
+
+# Exercise 4. 
+#Does the data suggest that the change in daily sales is due to a shift in the proportion of 
+# male-vs-female customers? 
+# Please use plots to support your answer (a rigorous statistical analysis is not necessary).
+
+library(ggplot2)
+glimpse(daily_sales)
+library(gridExtra)
+p1<-ggplot(daily_sales) +
+  geom_line(aes(y = total_sales, x = sale_day))
+
+p2<-ggplot(daily_sales) +
+  geom_line(aes(y = 100 * m_sales / total_sales, x = sale_day ))
+grid.arrange(p1,p2,ncol=1)
