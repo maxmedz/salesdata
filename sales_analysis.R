@@ -43,5 +43,4 @@ daily_sales%>%
   filter(delta == max(delta, na.rm = TRUE))
 
 # Exercise 3. Is the change in daily sales at the date you selected statistically significant? If so, what is the p-value?
-## to do so, i will compare the mean sales before and after the spike
-
+## to do so, i will compare the mean sales before and after the s
