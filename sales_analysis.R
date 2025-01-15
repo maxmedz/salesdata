@@ -28,7 +28,7 @@ daily_sales <- x %>%
     m_sales = sum(purchaser_gender == "male", na.rm = TRUE),    # Count male sales in the group
     .groups = 'drop'
   )
-
+hour
 # first explarotary plot
 ggplot(daily_sales, aes(y = total_sales, x = sale_day)) +
   geom_bar(stat = "identity")+
@@ -68,3 +68,43 @@ p1<-ggplot(daily_sales) +
 p2<-ggplot(daily_sales) +
   geom_line(aes(y = 100 * m_sales / total_sales, x = sale_day ))
 grid.arrange(p1,p2,ncol=1)
+
+# Exercise 5.
+# Assigning a time period to a sale and counting sales in a particular time period
+
+###my way
+x$sale_hour<-hour(x$sale_time)
+x$daypart<-ifelse(x$sale_hour %in% c(0:5),"night",
+                  ifelse(x$sale_hour %in% c(6:11),"morning",
+                         ifelse(x$sale_hour %in% c(12:17),"afternoon",
+                                "evening"))
+)
+
+library(dplyr)
+
+
+###optimal way
+x <- x %>%
+  mutate(daypart = case_when(
+    sale_hour %in% 0:5 ~ "night",
+    sale_hour %in% 6:11 ~ "morning",
+    sale_hour %in% 12:17 ~ "afternoon",
+    TRUE ~ "evening"  # Default case
+  ))
+
+
+#now let's count the shares of dayparts
+proportions<-round(prop.table(table(x$daypart))*100,2)
+
+#let's examine gender split across dayparts
+
+gender_sales<-x%>% 
+  group_by(purchaser_gender)%>%
+  summarise(
+    night_sales=sum(daypart=="night"),
+    morning_sales=sum(daypart=="morning"),
+    afternoon_sales=sum(daypart=="afternoon"),
+    evening_sales=sum(daypart=="evening"),
+    total_sales=n()
+  )
+gender_sales
