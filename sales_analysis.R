@@ -28,7 +28,7 @@ daily_sales <- x %>%
     m_sales = sum(purchaser_gender == "male", na.rm = TRUE),    # Count male sales in the group
     .groups = 'drop'
   )
-hour
+
 # first explarotary plot
 ggplot(daily_sales, aes(y = total_sales, x = sale_day)) +
   geom_bar(stat = "identity")+
@@ -42,8 +42,14 @@ daily_sales$delta <- daily_sales$total_sales-lag(daily_sales$total_sales)
 spike_day<-daily_sales%>%
   filter(delta == max(delta, na.rm = TRUE))%>%
   pull(sale_day)
+
+
+spike_day #the day of spike 
+
 # Exercise 3.
-#Is the change in daily sales at the date you selected statistically significant? If so, what is the p-value?
+#Is the change in daily sales at the date you selected statistically significant? 
+#If so, what is the p-value?
+
 ## to do so, i will compare the mean sales before and after the spike
 
 daily_sales$spiked<-
@@ -80,8 +86,6 @@ x$daypart<-ifelse(x$sale_hour %in% c(0:5),"night",
                                 "evening"))
 )
 
-library(dplyr)
-
 
 ###optimal way
 x <- x %>%
@@ -95,9 +99,9 @@ x <- x %>%
 
 #now let's count the shares of dayparts
 proportions<-round(prop.table(table(x$daypart))*100,2)
+proportions
 
 #let's examine gender split across dayparts
-
 gender_sales<-x%>% 
   group_by(purchaser_gender)%>%
   summarise(
